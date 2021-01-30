@@ -22,7 +22,7 @@
         "import"
     ],
     "rules": {
-        "prettier/prettier": "error",
+        "prettier/prettier": "warn",
         "import/no-webpack-loader-syntax": "error",
         "import/order": ["error", {
             "groups": [

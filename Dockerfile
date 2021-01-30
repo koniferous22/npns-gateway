@@ -1,4 +1,5 @@
-FROM node:lts-alpine3.12
+ARG TAG_GATEWAY_ALPINE=lts-alpine3.12
+FROM node:$TAG_GATEWAY_ALPINE
 
 WORKDIR /usr/src/api
 COPY package.json .
