@@ -5,10 +5,14 @@ import gql from 'graphql-tag';
 import { createResolversMap } from 'type-graphql';
 import { getSchema as getHelloWorldSchema } from './hello-world-service';
 import { getSchema as getTypeGraphQLSchema } from './account-service';
-import { getAccountServiceConnection } from './account-service/connections';
+import {
+  getAccountServiceConnection,
+  getTagServiceConnection
+} from './connections';
 
 const bootstrap = async () => {
   const accountConnection = await getAccountServiceConnection();
+  const tagConnection = await getTagServiceConnection();
   const serviceSchemas = await Promise.all([
     getHelloWorldSchema(),
     getTypeGraphQLSchema()

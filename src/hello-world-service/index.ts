@@ -1,3 +1,4 @@
+// TODO placeholder for challenge-service
 import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
 
 const schema = new GraphQLSchema({

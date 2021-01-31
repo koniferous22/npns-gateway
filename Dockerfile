@@ -1,7 +1,7 @@
-# TODO remove varables
-ARG TAG_GATEWAY_ALPINE=lts-alpine3.12
-ARG NODE_ENV=development
-FROM node:$TAG_GATEWAY_ALPINE AS base_node_alpine
+ARG IMAGE_TAG_GATEWAY_ALPINE
+ARG NODE_ENV
+FROM node:$IMAGE_TAG_GATEWAY_ALPINE AS base_node_alpine
+RUN echo "Building gateway with NODE_ENV=\"${NODE_ENV}\""
 
 WORKDIR /usr/src/gateway
 COPY package.json .

@@ -1,5 +1,4 @@
 import { getConnectionManager } from 'typeorm';
-import { tryConnectingNAttempts } from '../utils/connectMaxNAttempts';
 
 const connectionManager = getConnectionManager();
 
@@ -21,10 +20,11 @@ export const getAccountServiceConnection = async () => {
       !process.env.ACCOUNT_DB_PASSWORD ||
       !process.env.ACCOUNT_DB_DATABASE
     ) {
-      throw new Error('Invalid env configuration for database');
+      throw new Error('Invalid env configuration for account database');
     }
 
     connections.account = connectionManager.create({
+      name: 'account',
       type: process.env.ACCOUNT_DB_TYPE as any,
       host: process.env.ACCOUNT_DB_HOST,
       port: parseInt(process.env.ACCOUNT_DB_PORT, 10),
@@ -35,7 +35,37 @@ export const getAccountServiceConnection = async () => {
       logging: 'all'
       // entities: []
     });
-    await tryConnectingNAttempts(connections.account);
+    await connections.account.connect();
   }
   return connections.account;
+};
+
+export const getTagServiceConnection = async () => {
+  if (!connections.tag) {
+    if (
+      !process.env.TAG_DB_TYPE ||
+      !process.env.TAG_DB_HOST ||
+      !process.env.TAG_DB_PORT ||
+      !process.env.TAG_DB_USERNAME ||
+      !process.env.TAG_DB_PASSWORD ||
+      !process.env.TAG_DB_DATABASE
+    ) {
+      throw new Error('Invalid env configuration for tag database');
+    }
+
+    connections.tag = connectionManager.create({
+      name: 'tag',
+      type: process.env.TAG_DB_TYPE as any,
+      host: process.env.TAG_DB_HOST,
+      port: parseInt(process.env.TAG_DB_PORT, 10),
+      username: process.env.TAG_DB_USERNAME,
+      password: process.env.TAG_DB_PASSWORD,
+      database: process.env.TAG_DB_DATABASE,
+      synchronize: true,
+      logging: 'all'
+      // entities: []
+    });
+    await connections.tag.connect();
+  }
+  return connections.tag;
 };
