@@ -44,7 +44,7 @@ export default [
     migrations: [
       path.join(__dirname, 'src/challenge-service/migrations/**/*.ts')
     ],
-    entities: [path.join(__dirname, 'src/challenge-service/entities/**/*ts')],
+    entities: [path.join(__dirname, 'src/challenge-service/entities/**/*.ts')],
     cli: {
       migrationsDir: 'src/challenge-service/migrations',
       entitiesDir: 'src/challenge-service/entities'
