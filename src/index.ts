@@ -1,16 +1,15 @@
+import 'reflect-metadata';
 import { buildFederatedSchema } from '@apollo/federation';
 import { ApolloServer } from 'apollo-server';
 import { printSchema } from 'graphql';
 import gql from 'graphql-tag';
 import { createResolversMap } from 'type-graphql';
-import { getSchema as getTypeGraphQLSchema } from './account-service';
-import { getConnection } from './connections';
+import { createConnections } from 'typeorm';
+import { getTagServiceSchema } from './tag-service';
 
 const bootstrap = async () => {
-  const accountConnection = await getConnection('account');
-  const tagConnection = await getConnection('tag');
-  const challengeConnection = await getConnection('challenge');
-  const serviceSchemas = await Promise.all([getTypeGraphQLSchema()]);
+  await createConnections();
+  const serviceSchemas = await Promise.all([getTagServiceSchema()]);
 
   const server = new ApolloServer({
     schema: buildFederatedSchema(

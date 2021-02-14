@@ -13,3 +13,7 @@
     * https://github.com/seppevs/migrate-mongo/#creating-a-new-migration-script
   * Executing in docker compose 
     * `docker-compose exec -- gateway npm run migrate:mongo create <<MIGRATION_NAME>>`
+
+## TODO
+* Model hierarchical data with postgres ltree instead (get rid of typeorm in `tag-service`)
+* Request cacheing - tag query:w
