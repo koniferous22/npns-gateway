@@ -1,26 +1,41 @@
 import 'reflect-metadata';
-import { buildFederatedSchema } from '@apollo/federation';
 import { ApolloServer } from 'apollo-server';
-import { printSchema } from 'graphql';
-import gql from 'graphql-tag';
-import { createResolversMap } from 'type-graphql';
-import { createConnections } from 'typeorm';
-import { getTagServiceSchema } from './tag-service';
+import { ApolloGateway } from '@apollo/gateway';
+import waitOn from 'wait-on';
+import { getConfig } from './config';
+
+// TODO uninstall
+// * apollo federation
+// * graphql-tag
+// * type-graphql
+// * typeorm
 
 const bootstrap = async () => {
-  await createConnections();
-  const serviceSchemas = await Promise.all([getTagServiceSchema()]);
-
-  const server = new ApolloServer({
-    schema: buildFederatedSchema(
-      serviceSchemas.map((schema) => ({
-        typeDefs: gql(printSchema(schema)),
-        resolvers: createResolversMap(schema) as any
-      }))
-    )
+  const { port, tagServiceHost, tagServicePort } = getConfig();
+  const serviceList = [
+    { name: 'tag', url: `${tagServiceHost}:${tagServicePort}` }
+  ];
+  const serviceUrls = serviceList.map(({ url }) => url);
+  await waitOn({
+    resources: serviceUrls.map(
+      (url) => `${url}/.well-known/apollo/server-health`
+    ),
+    log: true,
+    interval: 250
   });
-  server.listen().then(({ url }) => {
-    console.log(`🚀  Server ready at ${url}`);
+  const gateway = new ApolloGateway({
+    serviceList,
+    serviceHealthCheck: true
+  });
+  const { schema, executor } = await gateway.load();
+  const server = new ApolloServer({
+    schema,
+    executor,
+    tracing: false,
+    playground: true
+  });
+  server.listen({ port }).then(({ url }) => {
+    console.log(`🚀  NPNS gateway ready at ${url}`);
   });
 };
 
