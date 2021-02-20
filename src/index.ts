@@ -4,16 +4,10 @@ import waitOn from 'wait-on';
 import { getConfig } from './config';
 
 const bootstrap = async () => {
-  const {
-    port,
-    tagServiceHost,
-    tagServicePort,
-    accountServiceHost,
-    accountServicePort
-  } = getConfig();
+  const { port, tag, account } = getConfig();
   const serviceList = [
-    { name: 'tag', url: `${tagServiceHost}:${tagServicePort}` },
-    { name: 'account', url: `${accountServiceHost}:${accountServicePort}` }
+    { name: 'tag', url: `${tag.host}:${tag.port}` },
+    { name: 'account', url: `${account.host}:${account.port}` }
   ];
   const serviceUrls = serviceList.map(({ url }) => url);
   await waitOn({
