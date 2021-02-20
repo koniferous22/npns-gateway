@@ -1,14 +1,7 @@
-import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server';
 import { ApolloGateway } from '@apollo/gateway';
 import waitOn from 'wait-on';
 import { getConfig } from './config';
-
-// TODO uninstall
-// * apollo federation
-// * graphql-tag
-// * type-graphql
-// * typeorm
 
 const bootstrap = async () => {
   const {

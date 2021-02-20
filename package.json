@@ -49,10 +49,7 @@
   "dependencies": {
     "@apollo/gateway": "^0.23.0",
     "apollo-server": "^2.19.2",
-    "class-validator": "^0.13.1",
     "graphql": "^15.5.0",
-    "mysql": "^2.18.1",
-    "reflect-metadata": "^0.1.13",
     "wait-on": "^5.2.1"
   },
   "husky": {
