@@ -25,21 +25,6 @@ const getNumber = (env: string, configPath: string) => {
 const configWithParser = {
   port: {
     originalValue: process.env.PORT,
-    transform: 'number' as const
-  },
-  tagServiceHost: {
-    originalValue: process.env.TAG_SERVICE_HOST,
-    transform: 'url' as const
-  },
-  tagServicePort: {
-    originalValue: process.env.TAG_SERVICE_PORT,
-    transform: 'number' as const
-  }
-};
-
-const configWithParser2 = {
-  port: {
-    originalValue: process.env.PORT,
     transform: getNumber,
     overridenValue: null as null | string
   },
@@ -52,18 +37,28 @@ const configWithParser2 = {
     originalValue: process.env.TAG_SERVICE_PORT,
     transform: getNumber,
     overridenValue: null as null | string
+  },
+  accountServiceHost: {
+    originalValue: process.env.ACCOUNT_SERVICE_HOST,
+    transform: getUrl,
+    overridenValue: null as null | string
+  },
+  accountServicePort: {
+    originalValue: process.env.ACCOUNT_SERVICE_PORT,
+    transform: getNumber,
+    overridenValue: null as null | string
   }
 };
 
 type ConfigType = {
-  [key in keyof typeof configWithParser2]: ReturnType<
-    typeof configWithParser2[key]['transform']
+  [key in keyof typeof configWithParser]: ReturnType<
+    typeof configWithParser[key]['transform']
   >;
 };
 
 const resolveConfig: () => ConfigType = () =>
   Object.fromEntries(
-    Object.entries(configWithParser2).map(
+    Object.entries(configWithParser).map(
       ([key, { originalValue, transform, overridenValue }]) => {
         if (!originalValue) {
           throw new Error();

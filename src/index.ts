@@ -11,9 +11,16 @@ import { getConfig } from './config';
 // * typeorm
 
 const bootstrap = async () => {
-  const { port, tagServiceHost, tagServicePort } = getConfig();
+  const {
+    port,
+    tagServiceHost,
+    tagServicePort,
+    accountServiceHost,
+    accountServicePort
+  } = getConfig();
   const serviceList = [
-    { name: 'tag', url: `${tagServiceHost}:${tagServicePort}` }
+    { name: 'tag', url: `${tagServiceHost}:${tagServicePort}` },
+    { name: 'account', url: `${accountServiceHost}:${accountServicePort}` }
   ];
   const serviceUrls = serviceList.map(({ url }) => url);
   await waitOn({
