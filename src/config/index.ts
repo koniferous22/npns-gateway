@@ -61,13 +61,15 @@ let settingsChanged = false;
 export const getConfig = () => {
   if (settingsChanged) {
     config = resolveConfig();
+    settingsChanged = false;
   }
   return config;
 };
 
 export function overrideConfig<KeyString extends string>(
   keyString: KeyString,
-  newValue: GetConfigValueByKeyString<KeyString, typeof configWithParser>
+  newValue: GetConfigValueByKeyString<KeyString, typeof configWithParser>,
+  cb?: () => void
 ) {
   const keys = keyString.split('.');
   let current: GetObjectValues<ConfigEntryType> = {
@@ -90,4 +92,7 @@ export function overrideConfig<KeyString extends string>(
   // @ts-expect-error Wrong ts inferring because of for-each
   current.overridenValue = newValue;
   settingsChanged = true;
+  if (cb) {
+    cb();
+  }
 }

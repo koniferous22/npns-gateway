@@ -2,7 +2,8 @@ export type ConfigEntryType = Record<
   string,
   | {
       type: 'leaf';
-      originalValue: string | undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      originalValue: any;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       transform?: (val: string, key: string) => any;
       overridenValue: null | string;
@@ -19,10 +20,15 @@ export type ResolveConfigType<
     [key in keyof ConfigT]: {
       leaf: ConfigT[key] extends {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        transform: (...args: any[]) => any;
+        originalValue: any;
       }
-        ? ReturnType<ConfigT[key]['transform']>
-        : string;
+        ? ConfigT[key] extends {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            transform: (...args: any[]) => any;
+          }
+          ? ReturnType<ConfigT[key]['transform']>
+          : ConfigT[key]['originalValue']
+        : never;
       node: ConfigT[key] extends {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         children: Record<string, any>;
@@ -103,7 +109,7 @@ export const resolveConfigEntry = (
           return [key, resolveConfigEntry(rest.children)];
         }
         case 'leaf': {
-          if (!('transform' in rest)) {
+          if (!('overridenValue' in rest)) {
             // Just fixing typescript code like this
             throw new Error("Missing key 'transform' in the config");
           }
