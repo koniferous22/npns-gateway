@@ -1,12 +1,6 @@
 # npns-gateway
 
-## Generating migrations
-* Postgres (via typeorm)
-  * `npm run orm -- migration:generate -c <<CONNECTION>> -n <<MIGRATION_NAME>>`
-    * `<<CONNECTION>>: 'account' | 'tag'`
-    * `<<MIGRATION_NAME>>: string // whatever`
-  * Executing in docker compose:
-    * `docker-compose exec -- gateway npm run orm -- migration:generate -c <<CONNECTION>> -n <<MIGRATION_NAME>>`
+## Generating migrations (Outdated paragraph)
 * Mongo (via external tool, **NOT AUTOMATIC**, sadly typeorm isn't that good)
   * `npm run migrate:mongo create <<MIGRATION_NAME>>`
   * Migration has to be written manually\
@@ -15,5 +9,4 @@
     * `docker-compose exec -- gateway npm run migrate:mongo create <<MIGRATION_NAME>>`
 
 ## TODO
-* Model hierarchical data with postgres ltree instead (get rid of typeorm in `tag-service`)
-* Request cacheing - tag query:w
+* Request cacheing

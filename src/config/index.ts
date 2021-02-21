@@ -55,7 +55,6 @@ export type ConfigType = ResolveConfigType<typeof configWithParser>;
 const resolveConfig: () => ConfigType = () =>
   resolveConfigEntry(configWithParser);
 
-// TODO define this function recursively when configuration grows
 let config = resolveConfig();
 let settingsChanged = false;
 

@@ -4,7 +4,7 @@ export type ConfigEntryType = Record<
       type: 'leaf';
       originalValue: string | undefined;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      transform: (val: string, key: string) => any;
+      transform?: (val: string, key: string) => any;
       overridenValue: null | string;
     }
   | {
@@ -22,7 +22,7 @@ export type ResolveConfigType<
         transform: (...args: any[]) => any;
       }
         ? ReturnType<ConfigT[key]['transform']>
-        : never;
+        : string;
       node: ConfigT[key] extends {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         children: Record<string, any>;
@@ -114,9 +114,10 @@ export const resolveConfigEntry = (
               }"`
             );
           }
+          const currentValue = rest.overridenValue ?? rest.originalValue;
           return [
             key,
-            rest.transform(rest.overridenValue ?? rest.originalValue, key)
+            rest.transform ? rest.transform(currentValue, key) : currentValue
           ];
         }
       }
