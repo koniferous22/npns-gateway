@@ -123,7 +123,9 @@ export const resolveConfigEntry = (
           const currentValue = rest.overridenValue ?? rest.originalValue;
           return [
             key,
-            rest.transform ? rest.transform(currentValue, key) : currentValue
+            rest.transform
+              ? rest.transform(currentValue.toString(), key)
+              : currentValue
           ];
         }
       }

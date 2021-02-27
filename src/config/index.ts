@@ -5,7 +5,7 @@ import {
   ResolveConfigType,
   GetObjectValues
 } from './utils/generics';
-import { getNumber, getUrl } from './utils/transformers';
+import { getEndpoint, getNumber, getUrl } from './utils/transformers';
 
 const configWithParser = {
   port: {
@@ -28,6 +28,12 @@ const configWithParser = {
         originalValue: process.env.TAG_SERVICE_PORT,
         transform: getNumber,
         overridenValue: null as null | string
+      },
+      graphqlPath: {
+        type: 'leaf' as const,
+        originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
+        transform: getEndpoint,
+        overridenValue: null as null | string
       }
     }
   },
@@ -44,6 +50,12 @@ const configWithParser = {
         type: 'leaf' as const,
         originalValue: process.env.ACCOUNT_SERVICE_PORT,
         transform: getNumber,
+        overridenValue: null as null | string
+      },
+      graphqlPath: {
+        type: 'leaf' as const,
+        originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
+        transform: getEndpoint,
         overridenValue: null as null | string
       }
     }
@@ -66,6 +78,7 @@ export const getConfig = () => {
   return config;
 };
 
+// TODO promisify
 export function overrideConfig<KeyString extends string>(
   keyString: KeyString,
   newValue: GetConfigValueByKeyString<KeyString, typeof configWithParser>,

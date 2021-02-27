@@ -11,6 +11,16 @@ export const getUrl = (env: string, configPath: string) => {
   }
 };
 
+export const getEndpoint = (env: string, configPath: string) => {
+  // TODO validate allowed url characters
+  if (!env.startsWith('/')) {
+    throw new Error(
+      `Invalid config value for "${configPath}" expected endpoint, got "${env}"`
+    );
+  }
+  return env;
+};
+
 export const getNumber = (env: string, configPath: string) => {
   const number = parseInt(env, 10);
   if (Number.isNaN(number)) {
