@@ -5,7 +5,7 @@ import {
   ResolveConfigType,
   GetObjectValues
 } from './utils/generics';
-import { getEndpoint, getNumber, getUrl } from './utils/transformers';
+import { getEndpoint, getEnum, getNumber, getUrl } from './utils/transformers';
 
 const configWithParser = {
   port: {
@@ -54,9 +54,25 @@ const configWithParser = {
       },
       graphqlPath: {
         type: 'leaf' as const,
-        originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
+        originalValue: process.env.ACCOUNT_SERVICE_GRAPHQL_PATH,
         transform: getEndpoint,
         overridenValue: null as null | string
+      },
+      jwt: {
+        type: 'node' as const,
+        children: {
+          secret: {
+            type: 'leaf' as const,
+            originalValue: process.env.ACCOUNT_SERVICE_JWT_SECRET,
+            overridenValue: null as null | string
+          },
+          algorithm: {
+            type: 'leaf' as const,
+            originalValue: process.env.ACCOUNT_SERVICE_JWT_ALGORITHM,
+            transform: getEnum(['HS256']),
+            overridenValue: null as null | string
+          }
+        }
       }
     }
   }

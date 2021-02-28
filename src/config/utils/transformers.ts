@@ -1,4 +1,5 @@
 import { URL } from 'url';
+import { ArrayElement } from '../../utils';
 
 export const getUrl = (env: string, configPath: string) => {
   try {
@@ -30,3 +31,16 @@ export const getNumber = (env: string, configPath: string) => {
   }
   return number;
 };
+
+export function getEnum<T extends string>(allowedValues: T[]) {
+  return (env: string, configPath: string) => {
+    if (!allowedValues.includes(env as T)) {
+      throw new Error(
+        `Invalid config value for "${configPath}" expected enum with allowed values [${allowedValues.join(
+          ', '
+        )}], got ${env}`
+      );
+    }
+    return env as ArrayElement<typeof allowedValues>;
+  };
+}

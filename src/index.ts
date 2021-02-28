@@ -1,5 +1,7 @@
-import { ApolloServer } from 'apollo-server';
-import { ApolloGateway } from '@apollo/gateway';
+import { ApolloServer } from 'apollo-server-express';
+import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
+import express from 'express';
+import expressJwt from 'express-jwt';
 import waitOn from 'wait-on';
 import { getConfig } from './config';
 
@@ -23,19 +25,50 @@ const bootstrap = async () => {
     log: true,
     interval: 250
   });
+
+  const app = express();
+  app.use(
+    expressJwt({
+      // NOTE validated by runtime config validators
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      secret: account.jwt.secret!,
+      algorithms: [account.jwt.algorithm],
+      credentialsRequired: false
+    })
+  );
+
   const gateway = new ApolloGateway({
     serviceList: serviceList,
-    serviceHealthCheck: true
+    serviceHealthCheck: true,
+    // NOTE inspiration: https://www.apollographql.com/blog/setting-up-authentication-and-authorization-with-apollo-federation/
+    buildService: ({ url }) =>
+      new RemoteGraphQLDataSource({
+        url,
+        willSendRequest({ request, context }) {
+          request.http?.headers.set(
+            'user',
+            context.user && JSON.stringify(context.user)
+          );
+        }
+      })
   });
   const { schema, executor } = await gateway.load();
   const server = new ApolloServer({
     schema,
+    context: ({ req }) => ({
+      user: req.user ?? null
+    }),
     executor,
     tracing: false,
     playground: true
   });
-  server.listen({ port }).then(({ url }) => {
-    console.log(`🚀  NPNS gateway ready at ${url}`);
+  server.applyMiddleware({
+    app
+  });
+  app.listen({ port }, () => {
+    console.log(
+      `🚀 NPNS Gateway ready at localhost:${port}${server.graphqlPath}`
+    );
   });
 };
 
