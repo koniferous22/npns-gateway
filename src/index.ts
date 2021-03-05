@@ -45,10 +45,9 @@ const bootstrap = async () => {
       new RemoteGraphQLDataSource({
         url,
         willSendRequest({ request, context }) {
-          request.http?.headers.set(
-            'user',
-            context.user && JSON.stringify(context.user)
-          );
+          if (context.user) {
+            request.http?.headers.set('user', JSON.stringify(context.user));
+          }
         }
       })
   });
