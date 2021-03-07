@@ -66,7 +66,7 @@ const bootstrap = async () => {
   });
   app.listen({ port }, () => {
     console.log(
-      `🚀 NPNS Gateway ready at localhost:${port}${server.graphqlPath}`
+      `🚀 NPNS Gateway ready at http://localhost:${port}${server.graphqlPath}`
     );
   });
 };
