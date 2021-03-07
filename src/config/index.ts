@@ -1,76 +1,78 @@
 import {
-  resolveConfigEntry,
   GetConfigValueByKeyString,
-  ConfigEntryType,
-  ResolveConfigType,
-  GetObjectValues
+  ConfigAstNode,
+  ResolveConfigAstNode,
+  resolveConfigNode
 } from './utils/generics';
 import { getEndpoint, getEnum, getNumber, getUrl } from './utils/transformers';
 
 const configWithParser = {
-  port: {
-    type: 'leaf' as const,
-    originalValue: process.env.PORT,
-    transform: getNumber,
-    overridenValue: null as null | string
-  },
-  tag: {
-    type: 'node' as const,
-    children: {
-      host: {
-        type: 'leaf' as const,
-        originalValue: process.env.TAG_SERVICE_HOST,
-        transform: getUrl,
-        overridenValue: null as null | string
-      },
-      port: {
-        type: 'leaf' as const,
-        originalValue: process.env.TAG_SERVICE_PORT,
-        transform: getNumber,
-        overridenValue: null as null | string
-      },
-      graphqlPath: {
-        type: 'leaf' as const,
-        originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
-        transform: getEndpoint,
-        overridenValue: null as null | string
+  type: 'node' as const,
+  children: {
+    port: {
+      type: 'leaf' as const,
+      originalValue: process.env.PORT,
+      transform: getNumber,
+      overridenValue: null as null | string
+    },
+    tag: {
+      type: 'node' as const,
+      children: {
+        host: {
+          type: 'leaf' as const,
+          originalValue: process.env.TAG_SERVICE_HOST,
+          transform: getUrl,
+          overridenValue: null as null | string
+        },
+        port: {
+          type: 'leaf' as const,
+          originalValue: process.env.TAG_SERVICE_PORT,
+          transform: getNumber,
+          overridenValue: null as null | string
+        },
+        graphqlPath: {
+          type: 'leaf' as const,
+          originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
+          transform: getEndpoint,
+          overridenValue: null as null | string
+        }
       }
-    }
-  },
-  account: {
-    type: 'node' as const,
-    children: {
-      host: {
-        type: 'leaf' as const,
-        originalValue: process.env.ACCOUNT_SERVICE_HOST,
-        transform: getUrl,
-        overridenValue: null as null | string
-      },
-      port: {
-        type: 'leaf' as const,
-        originalValue: process.env.ACCOUNT_SERVICE_PORT,
-        transform: getNumber,
-        overridenValue: null as null | string
-      },
-      graphqlPath: {
-        type: 'leaf' as const,
-        originalValue: process.env.ACCOUNT_SERVICE_GRAPHQL_PATH,
-        transform: getEndpoint,
-        overridenValue: null as null | string
-      },
-      jwt: {
-        type: 'node' as const,
-        children: {
-          secret: {
-            type: 'leaf' as const,
-            originalValue: process.env.ACCOUNT_SERVICE_JWT_SECRET,
-            overridenValue: null as null | string
-          },
-          algorithm: {
-            type: 'leaf' as const,
-            originalValue: process.env.ACCOUNT_SERVICE_JWT_ALGORITHM,
-            transform: getEnum(['HS256']),
-            overridenValue: null as null | string
+    },
+    account: {
+      type: 'node' as const,
+      children: {
+        host: {
+          type: 'leaf' as const,
+          originalValue: process.env.ACCOUNT_SERVICE_HOST,
+          transform: getUrl,
+          overridenValue: null as null | string
+        },
+        port: {
+          type: 'leaf' as const,
+          originalValue: process.env.ACCOUNT_SERVICE_PORT,
+          transform: getNumber,
+          overridenValue: null as null | string
+        },
+        graphqlPath: {
+          type: 'leaf' as const,
+          originalValue: process.env.ACCOUNT_SERVICE_GRAPHQL_PATH,
+          transform: getEndpoint,
+          overridenValue: null as null | string
+        },
+        jwt: {
+          type: 'node' as const,
+          children: {
+            secret: {
+              type: 'leaf' as const,
+              originalValue: process.env.ACCOUNT_SERVICE_JWT_SECRET,
+              overridenValue: null as null | string
+            },
+            algorithm: {
+              type: 'leaf' as const,
+              originalValue: process.env.ACCOUNT_SERVICE_JWT_ALGORITHM,
+              transform: getEnum(['HS256']),
+              overridenValue: null as null | string
+            }
           }
         }
       }
@@ -78,16 +80,15 @@ const configWithParser = {
   }
 };
 
-export type ConfigType = ResolveConfigType<typeof configWithParser>;
+export type ConfigType = ResolveConfigAstNode<typeof configWithParser>;
 
 const resolveConfig: () => ConfigType = () => {
-  const { config, errors } = resolveConfigEntry(configWithParser);
+  const { config, errors } = resolveConfigNode(configWithParser);
   if (errors.length > 0) {
     throw new Error(errors.join('\n'));
   }
   return config;
 };
-
 let config = resolveConfig();
 let settingsChanged = false;
 
@@ -104,17 +105,28 @@ export function overrideConfig<KeyString extends string>(
   newValue: GetConfigValueByKeyString<KeyString, typeof configWithParser>
 ) {
   const keys = keyString.split('.');
-  let current: GetObjectValues<ConfigEntryType> = {
-    type: 'node',
-    children: configWithParser
-  };
+  let current: ConfigAstNode = configWithParser;
   keys.forEach((key) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(key in current) || !(('children' in (current as any)[key]) as any)) {
-      throw new Error(`Configuration key '${keyString}' does not exist`);
+    switch (current.type) {
+      case 'node': {
+        current = current.children[key];
+        break;
+      }
+      case 'array': {
+        const index = parseInt(key, 10);
+        current = current.values[index];
+        break;
+      }
+      case 'leaf': {
+        throw new Error(`Key string "${keyString}" out of range`);
+      }
+      default: {
+        throw new Error(
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          `Encountered invalid node type: "${current && current!.type}"`
+        );
+      }
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    current = (current as any)[key].children;
   });
   if (!['leaf'].includes(current.type)) {
     throw new Error(
@@ -122,9 +134,6 @@ export function overrideConfig<KeyString extends string>(
     );
   }
   // @ts-expect-error Wrong ts inferring because of for-each
-  current.overridenValue = newValue;
+  current.overridenValue = newValue.toString();
   settingsChanged = true;
-  if (cb) {
-    cb();
-  }
 }
