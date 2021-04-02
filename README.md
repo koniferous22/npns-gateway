@@ -11,3 +11,4 @@
 ## TODO
 * Request cacheing
 * Define all responses as recursive partial, to remove sensitivity towards single failure
+* Optimize dockerfile build context
