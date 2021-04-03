@@ -6,10 +6,11 @@ import waitOn from 'wait-on';
 import { getConfig } from './config';
 
 const bootstrap = async () => {
-  const { port, tag, account } = getConfig();
+  const { port, tag, account, challenge } = getConfig();
   const services = {
     tag,
-    account
+    account,
+    challenge
   };
   const serviceList = Object.entries(services).map(
     ([name, { host, port, graphqlPath }]) => ({
