@@ -3,10 +3,10 @@ import { ApolloGateway, RemoteGraphQLDataSource } from '@apollo/gateway';
 import express from 'express';
 import expressJwt from 'express-jwt';
 import waitOn from 'wait-on';
-import { getConfig } from './config';
+import { Config } from './config';
 
 const bootstrap = async () => {
-  const { port, tag, account, challenge } = getConfig();
+  const { port, tag, account, challenge } = Config.getInstance().getConfig();
   const services = {
     tag,
     account,

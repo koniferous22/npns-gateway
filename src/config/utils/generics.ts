@@ -1,4 +1,4 @@
-import { ArrayElement } from '../../utils';
+import { ArrayElement } from '../../utils/generics';
 
 export type ConfigAstNode =
   | {
