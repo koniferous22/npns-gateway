@@ -16,29 +16,6 @@ const configWithParser = {
       transform: getNumber,
       overridenValue: null as null | string
     },
-    tag: {
-      type: 'node' as const,
-      children: {
-        host: {
-          type: 'leaf' as const,
-          originalValue: process.env.TAG_SERVICE_HOST,
-          transform: getUrl,
-          overridenValue: null as null | string
-        },
-        port: {
-          type: 'leaf' as const,
-          originalValue: process.env.TAG_SERVICE_PORT,
-          transform: getNumber,
-          overridenValue: null as null | string
-        },
-        graphqlPath: {
-          type: 'leaf' as const,
-          originalValue: process.env.TAG_SERVICE_GRAPHQL_PATH,
-          transform: getEndpoint,
-          overridenValue: null as null | string
-        }
-      }
-    },
     account: {
       type: 'node' as const,
       children: {
@@ -96,6 +73,29 @@ const configWithParser = {
         graphqlPath: {
           type: 'leaf' as const,
           originalValue: process.env.CHALLENGE_SERVICE_GRAPHQL_PATH,
+          transform: getEndpoint,
+          overridenValue: null as null | string
+        }
+      }
+    },
+    content: {
+      type: 'node' as const,
+      children: {
+        host: {
+          type: 'leaf' as const,
+          originalValue: process.env.CONTENT_SERVICE_HOST,
+          transform: getUrl,
+          overridenValue: null as null | string
+        },
+        port: {
+          type: 'leaf' as const,
+          originalValue: process.env.CONTENT_SERVICE_PORT,
+          transform: getNumber,
+          overridenValue: null as null | string
+        },
+        graphqlPath: {
+          type: 'leaf' as const,
+          originalValue: process.env.CONTENT_SERVICE_GRAPHQL_PATH,
           transform: getEndpoint,
           overridenValue: null as null | string
         }
