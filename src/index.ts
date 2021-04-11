@@ -6,14 +6,8 @@ import waitOn from 'wait-on';
 import { Config } from './config';
 
 const bootstrap = async () => {
-  const {
-    port,
-    content,
-    account,
-    challenge
-  } = Config.getInstance().getConfig();
+  const { port, account, challenge } = Config.getInstance().getConfig();
   const services = {
-    content,
     account,
     challenge
   };
