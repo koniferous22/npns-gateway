@@ -78,24 +78,24 @@ const configWithParser = {
         }
       }
     },
-    content: {
+    multiWriteProxy: {
       type: 'node' as const,
       children: {
         host: {
           type: 'leaf' as const,
-          originalValue: process.env.CONTENT_SERVICE_HOST,
+          originalValue: process.env.MULTI_WRITE_PROXY_HOST,
           transform: getUrl,
           overridenValue: null as null | string
         },
         port: {
           type: 'leaf' as const,
-          originalValue: process.env.CONTENT_SERVICE_PORT,
+          originalValue: process.env.MULTI_WRITE_PROXY_PORT,
           transform: getNumber,
           overridenValue: null as null | string
         },
         graphqlPath: {
           type: 'leaf' as const,
-          originalValue: process.env.CONTENT_SERVICE_GRAPHQL_PATH,
+          originalValue: process.env.MULTI_WRITE_PROXY_GRAPHQL_PATH,
           transform: getEndpoint,
           overridenValue: null as null | string
         }

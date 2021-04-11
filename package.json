@@ -7,9 +7,7 @@
     "build": "tsc",
     "start:dev": "ts-node-dev src/index.ts",
     "start": "node dist/index.js",
-    "lint": "eslint src/**/*.ts",
-    "orm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
-    "migrate:mongo": "node ./node_modules/migrate-mongo/bin/migrate-mongo.js"
+    "lint": "eslint src/**/*.ts"
   },
   "repository": {
     "type": "git",
